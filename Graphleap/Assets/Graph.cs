@@ -9,6 +9,7 @@ public class Graph : MonoBehaviour {
 	// [Range] instructs the inspector to enforce a range for resolution
 	[Range(10,100)]
 	public int resolution = 10;
+	Transform[] points;
 
 	void Awake () {
 
@@ -17,9 +18,11 @@ public class Graph : MonoBehaviour {
 		float step = 2f / resolution;
 		Vector3 scale = Vector3.one * step;
 		Vector3 position;
+		position.y = 0f;
 		position.z = 0f;
+		points = new Transform[resolution];
 
-		for (int i = 0; i < resolution; i++) {
+		for (int i = 0; i < points.Length; i++) {
 			//keep track of the referenced transform component with a variable
 			Transform point = Instantiate(pointPrefab);
 			//to put the cubes in a row along the X axis, multiply by i
@@ -27,12 +30,29 @@ public class Graph : MonoBehaviour {
 			//tp turn that into the -1-1 range, subtract 1 before scaling the vector
 			//adding 0.5f before diving will shift the position of the cubes to fit -1-1 range
 			position.x = (i + 0.5f) * step -1f;
-			position.y = position.x * position.x;
 			point.localPosition = position;
 			// scale down cubes to appropriate domain
 			point.localScale = scale;
 			// set up each cube as a child of Graph game object
 			point.SetParent(transform, false);
+			points[i] = point;
+		}
+	}
+
+	void Update() {
+		for (int i = 0; i < points.Length; i++) {
+			//get reference of current array element
+			Transform point = points[i];
+			//retrieve that point's position
+			Vector3 position = point.localPosition;
+			//derive y coordinate
+			//to animate this function add current time to x
+			// we use f(x,t) = sin(pi(x+t)) where t is the elapsed time
+			position.y = Mathf.Sin(Mathf.PI * (position.x + Time.time));
+			//vector are not objects
+			//we adjusted the local variable
+			//to apply to the point we set its position again
+			point.localPosition = position;
 		}
 	}
 }
