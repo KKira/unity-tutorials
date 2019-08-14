@@ -14,6 +14,12 @@ public class Graph : MonoBehaviour {
 	[Range(0,1)]
 	public int function;
 
+	//by using delegate, it is possible to invoke f as a function
+	//instead of if else, use an array's index to determine which function
+	static GraphFunction[] functions = {
+			SineFunction, MultiSineFunction
+		};
+
 	void Awake () {
 
 		//store in a variable to avoid calculating in the loop everytime as the value is the same
@@ -44,16 +50,8 @@ public class Graph : MonoBehaviour {
 
 	void Update() {
 		float t = Time.time;
-		//by using delegate, it is possible to invoke f as a function
-		//instead of if else, use an array's index to determine which function
-		static GraphFunction[] functions = {
-			SineFunction, MultiSineFunction
-		};
-		if (function == 0) {
-			f = SineFunction;
-		} else {
-			f = MultiSineFunction;
-		}
+
+		GraphFunction f = functions[function];
 
 		for (int i = 0; i < points.Length; i++) {
 			//get reference of current array element
